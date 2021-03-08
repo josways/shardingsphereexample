@@ -37,6 +37,7 @@
         <module>sub-database-and-sub-table</module>
         <module>sub-database</module>
         <module>sub-table</module>
+        <module>custom-test</module>
     </modules>
 
     <dependencyManagement>

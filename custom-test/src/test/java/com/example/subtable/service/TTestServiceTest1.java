@@ -36,6 +36,7 @@ public class TTestServiceTest1 {
         System.out.println(everyDataSize);
 
         ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(threadNumber);
+        final CountDownLatch endGate = new CountDownLatch(threadNumber);
 
         ArrayList<Integer> integerArrayList = new ArrayList<>();
 
@@ -43,55 +44,63 @@ public class TTestServiceTest1 {
             Future<Integer> integerFuture = newFixedThreadPool.submit(new Callable<Integer>() {
                 @Override
                 public Integer call() throws Exception {
-                    int sum = 0;
+                    try {
+                        int sum = 0;
 
-                    if (isBatch) {
+                        if (isBatch) {
 
-                        int loopSize;
-                        if (everyDataSize % batchSize == 0) {
-                            loopSize = everyDataSize / batchSize;
+                            int loopSize;
+                            if (everyDataSize % batchSize == 0) {
+                                loopSize = everyDataSize / batchSize;
+                            } else {
+                                throw new RuntimeException("数据量和线程数不是倍数关系！");
+                            }
+                            System.out.println(loopSize);
+
+                            for (int j = 0; j < loopSize; j++) {
+                                ArrayList<TTest> tTestArrayList = new ArrayList<>();
+
+                                for (int k = 0; k < batchSize; k++) {
+                                    TTest tTest = new TTest();
+                                    tTest.setColumn1(k);
+                                    tTest.setColumn2("测试数据" + k);
+                                    tTest.setCreateTime(new Date());
+                                    tTestArrayList.add(tTest);
+
+                                    sum++;
+                                }
+                                tTestService.saveBatch(tTestArrayList);
+                            }
                         } else {
-                            throw new RuntimeException("数据量和线程数不是倍数关系！");
-                        }
-                        System.out.println(loopSize);
-
-                        for (int j = 0; j < loopSize; j++) {
-                            ArrayList<TTest> tTestArrayList = new ArrayList<>();
-
-                            for (int k = 0; k < batchSize; k++) {
+                            for (int i = 0; i < everyDataSize; i++) {
                                 TTest tTest = new TTest();
-                                tTest.setColumn1(k);
-                                tTest.setColumn2("测试数据" + k);
+                                tTest.setColumn1(i);
+                                tTest.setColumn2("测试数据" + i);
                                 tTest.setCreateTime(new Date());
-                                tTestArrayList.add(tTest);
+                                tTestService.save(tTest);
 
                                 sum++;
                             }
-                            tTestService.saveBatch(tTestArrayList);
                         }
-                    } else {
-                        for (int i = 0; i < everyDataSize; i++) {
-                            TTest tTest = new TTest();
-                            tTest.setColumn1(i);
-                            tTest.setColumn2("测试数据" + i);
-                            tTest.setCreateTime(new Date());
-                            tTestService.save(tTest);
-
-                            sum++;
-                        }
+                        return sum;
+                    } finally {
+                        endGate.countDown();
                     }
-
-                    return sum;
                 }
             });
-            Integer integer = integerFuture.get();
-            System.out.println(integer);
-            integerArrayList.add(integer);
+//            Integer integer = integerFuture.get();
+//            System.out.println(integer);
+//            integerArrayList.add(integer);
         }
+        System.out.println(newFixedThreadPool);
 
-        for (Integer integer : integerArrayList) {
-            System.out.println(integer);
-        }
+//        for (Integer integer : integerArrayList) {
+//            System.out.println(integer);
+//        }
+
+        endGate.await();
+
+        System.out.println(newFixedThreadPool);
 
         Instant end = Instant.now();
 
@@ -99,6 +108,7 @@ public class TTestServiceTest1 {
 
         System.out.println(threadNumber + "线程耗时：" + millis / 1000.0 + " 秒");
 
+        System.out.println("现在总数量为：" + tTestService.count());
         tTestService.truncateData();
 
     }
@@ -129,11 +139,11 @@ public class TTestServiceTest1 {
         tTestService.truncateData();
     }
 
-    @Order(1)
-    @Test
-    public void insertBatch1() throws ExecutionException, InterruptedException {
-        insert(1, 100000, true, 1000);
-    }
+//    @Order(1)
+//    @Test
+//    public void insertBatch1() throws ExecutionException, InterruptedException {
+//        insert(1, 100000, true, 1000);
+//    }
 
     @Order(2)
     @Test

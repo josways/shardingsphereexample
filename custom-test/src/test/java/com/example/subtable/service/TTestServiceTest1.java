@@ -36,12 +36,10 @@ public class TTestServiceTest1 {
         System.out.println(everyDataSize);
 
         ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(threadNumber);
-        final CountDownLatch endGate = new CountDownLatch(threadNumber);
-
-        ArrayList<Integer> integerArrayList = new ArrayList<>();
+        final CountDownLatch countDownLatch = new CountDownLatch(threadNumber);
 
         for (int i = 0; i < threadNumber; i++) {
-            Future<Integer> integerFuture = newFixedThreadPool.submit(new Callable<Integer>() {
+            newFixedThreadPool.submit(new Callable<Integer>() {
                 @Override
                 public Integer call() throws Exception {
                     try {
@@ -84,33 +82,25 @@ public class TTestServiceTest1 {
                         }
                         return sum;
                     } finally {
-                        endGate.countDown();
+                        countDownLatch.countDown();
                     }
                 }
             });
-//            Integer integer = integerFuture.get();
-//            System.out.println(integer);
-//            integerArrayList.add(integer);
         }
-        System.out.println(newFixedThreadPool);
-
-//        for (Integer integer : integerArrayList) {
-//            System.out.println(integer);
-//        }
-
-        endGate.await();
 
         System.out.println(newFixedThreadPool);
+        countDownLatch.await();
+        System.out.println(newFixedThreadPool);
+        newFixedThreadPool.shutdown();
 
         Instant end = Instant.now();
 
         long millis = Duration.between(start, end).toMillis();
 
         System.out.println(threadNumber + "线程耗时：" + millis / 1000.0 + " 秒");
-
         System.out.println("现在总数量为：" + tTestService.count());
-        tTestService.truncateData();
 
+        tTestService.truncateData();
     }
 
 
@@ -127,10 +117,6 @@ public class TTestServiceTest1 {
 //    public void insert10() throws ExecutionException, InterruptedException {
 //        insert(10, 100000, false, 0);
 //    }
-//    @Test
-//    public void insertBatch1() throws ExecutionException, InterruptedException {
-//        insert(1, 100000, true, 1000);
-//    }
 
     @Order(0)
     @Test
@@ -139,11 +125,11 @@ public class TTestServiceTest1 {
         tTestService.truncateData();
     }
 
-//    @Order(1)
-//    @Test
-//    public void insertBatch1() throws ExecutionException, InterruptedException {
-//        insert(1, 100000, true, 1000);
-//    }
+    @Order(1)
+    @Test
+    public void insertBatch1() throws ExecutionException, InterruptedException {
+        insert(1, 100000, true, 1000);
+    }
 
     @Order(2)
     @Test
@@ -163,28 +149,10 @@ public class TTestServiceTest1 {
         insert(5, 100000, true, 1000);
     }
 
-    @Order(6)
-    @Test
-    public void insertBatch6() throws ExecutionException, InterruptedException {
-        insert(6, 100000, true, 1000);
-    }
-
-    @Order(8)
-    @Test
-    public void insertBatch8() throws ExecutionException, InterruptedException {
-        insert(8, 100000, true, 1000);
-    }
-
     @Order(10)
     @Test
     public void insertBatch10() throws ExecutionException, InterruptedException {
         insert(10, 100000, true, 1000);
-    }
-
-    @Order(15)
-    @Test
-    public void insertBatch15() throws ExecutionException, InterruptedException {
-        insert(15, 100000, true, 1000);
     }
 
     @Order(20)
@@ -192,12 +160,5 @@ public class TTestServiceTest1 {
     public void insertBatch20() throws ExecutionException, InterruptedException {
         insert(20, 100000, true, 1000);
     }
-
-//    @Order(100)
-//    @Test
-//    public void count() {
-//        Integer count = tTestService.count();
-//        System.out.println(count);
-//    }
 
 }

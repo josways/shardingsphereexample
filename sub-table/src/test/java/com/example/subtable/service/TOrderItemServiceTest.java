@@ -38,11 +38,10 @@ class TOrderItemServiceTest {
         System.out.println(everyDataSize);
 
         ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(threadNumber);
-
-        ArrayList<Integer> integerArrayList = new ArrayList<>();
+        final CountDownLatch countDownLatch = new CountDownLatch(threadNumber);
 
         for (int i = 0; i < threadNumber; i++) {
-            Future<Integer> integerFuture = newFixedThreadPool.submit(new Callable<Integer>() {
+            newFixedThreadPool.submit(new Callable<Integer>() {
                 @Override
                 public Integer call() throws Exception {
                     int sum = 0;
@@ -102,19 +101,20 @@ class TOrderItemServiceTest {
                     return sum;
                 }
             });
-            Integer integer = integerFuture.get();
-            integerArrayList.add(integer);
         }
 
-        for (Integer integer : integerArrayList) {
-            System.out.println(integer);
-        }
+        System.out.println(newFixedThreadPool);
+        countDownLatch.await();
+        System.out.println(newFixedThreadPool);
+        newFixedThreadPool.shutdown();
 
         Instant end = Instant.now();
 
         long millis = Duration.between(start, end).toMillis();
 
         System.out.println(threadNumber + "线程耗时：" + millis / 1000.0 + " 秒");
+        System.out.println("现在总数量为：" + tOrderItemService.count());
+        System.out.println("现在总数量为：" + tOrderService.count());
 
         tOrderItemService.truncateData();
         tOrderService.truncateData();
@@ -137,10 +137,6 @@ class TOrderItemServiceTest {
 //        insert(10, 100000, false, 0);
 //    }
 
-    //    @Test
-//    public void insertBatch1() throws ExecutionException, InterruptedException {
-//        insert(1, 100000, true, 1000);
-//    }
 
     @Order(0)
     @Test
@@ -174,29 +170,12 @@ class TOrderItemServiceTest {
         insert(5, 100000, true, 1000);
     }
 
-    @Order(6)
-    @Test
-    public void insertBatch6() throws ExecutionException, InterruptedException {
-        insert(6, 100000, true, 1000);
-    }
-
-    @Order(8)
-    @Test
-    public void insertBatch8() throws ExecutionException, InterruptedException {
-        insert(8, 100000, true, 1000);
-    }
-
     @Order(10)
     @Test
     public void insertBatch10() throws ExecutionException, InterruptedException {
         insert(10, 100000, true, 1000);
     }
 
-    @Order(15)
-    @Test
-    public void insertBatch15() throws ExecutionException, InterruptedException {
-        insert(15, 100000, true, 1000);
-    }
 
     @Order(20)
     @Test
@@ -204,13 +183,5 @@ class TOrderItemServiceTest {
         insert(20, 100000, true, 1000);
     }
 
-    @Order(100)
-    @Test
-    public void count() {
-        int tOrderItemCount = tOrderItemService.count();
-        int tOrderCount = tOrderService.count();
-        System.out.println("tOrderItemCount: " + tOrderItemCount);
-        System.out.println("tOrderCount: " + tOrderCount);
-    }
 
 }

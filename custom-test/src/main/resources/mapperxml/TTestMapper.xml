@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.customtest.mapper.TTestMapper">
+  <resultMap id="BaseResultMap" type="com.example.customtest.domain.TTest">
+    <!--@Table t_test-->
+    <id column="test_id" jdbcType="BIGINT" property="testId" />
+    <result column="column1" jdbcType="INTEGER" property="column1" />
+    <result column="column2" jdbcType="VARCHAR" property="column2" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    test_id, column1, column2, create_time
+  </sql>
+  <insert id="batchInsert" parameterType="map">
+    insert into t_test
+    (test_id, column1, column2, create_time)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.testId,jdbcType=BIGINT}, #{item.column1,jdbcType=INTEGER}, #{item.column2,jdbcType=VARCHAR}, 
+        #{item.createTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+</mapper>

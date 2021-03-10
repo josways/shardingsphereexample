@@ -30,6 +30,7 @@
         <mybatis-spring-boot-starter.version>2.1.4</mybatis-spring-boot-starter.version>
         <mybatis-plus-boot-starter.version>3.4.2</mybatis-plus-boot-starter.version>
         <druid.version>1.2.5</druid.version>
+        <hutool-all.version>5.5.9</hutool-all.version>
     </properties>
 
     <modules>
@@ -62,6 +63,11 @@
                 <version>${druid.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-all.version}</version>
+            </dependency>
 
         </dependencies>
 

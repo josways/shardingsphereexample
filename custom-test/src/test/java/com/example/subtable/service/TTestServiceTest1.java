@@ -1,5 +1,7 @@
 package com.example.subtable.service;
 
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 import com.example.customtest.CustomTestApplication;
 import com.example.customtest.domain.TTest;
 import com.example.customtest.service.TTestService;
@@ -24,6 +26,8 @@ public class TTestServiceTest1 {
     private TTestService tTestService;
 
     public void insert(int threadNumber, int dataSize, boolean isBatch, int batchSize) throws ExecutionException, InterruptedException {
+
+        Snowflake snowflake = IdUtil.getSnowflake(1, 1);
 
         Instant start = Instant.now();
 
@@ -60,6 +64,7 @@ public class TTestServiceTest1 {
 
                                 for (int k = 0; k < batchSize; k++) {
                                     TTest tTest = new TTest();
+                                    tTest.setTestId(snowflake.nextId());
                                     tTest.setColumn1(k);
                                     tTest.setColumn2("测试数据" + k);
                                     tTest.setCreateTime(new Date());
@@ -67,7 +72,7 @@ public class TTestServiceTest1 {
 
                                     sum++;
                                 }
-                                tTestService.saveBatch(tTestArrayList);
+                                tTestService.batchInsert(tTestArrayList);
                             }
                         } else {
                             for (int i = 0; i < everyDataSize; i++) {
@@ -106,16 +111,16 @@ public class TTestServiceTest1 {
 
 //    @Test
 //    public void insert1() throws ExecutionException, InterruptedException {
-//        insert(1, 100000, false, 0);
+//        insert(1, 10000000, false, 0);
 //    }
 //    @Test
 //    public void insert5() throws ExecutionException, InterruptedException {
-//        insert(5, 100000, false, 0);
+//        insert(5, 10000000, false, 0);
 //    }
 //
 //    @Test
 //    public void insert10() throws ExecutionException, InterruptedException {
-//        insert(10, 100000, false, 0);
+//        insert(10, 10000000, false, 0);
 //    }
 
     @Order(0)
@@ -125,40 +130,40 @@ public class TTestServiceTest1 {
         tTestService.truncateData();
     }
 
-    @Order(1)
-    @Test
-    public void insertBatch1() throws ExecutionException, InterruptedException {
-        insert(1, 100000, true, 1000);
-    }
+//    @Order(1)
+//    @Test
+//    public void insertBatch1() throws ExecutionException, InterruptedException {
+//        insert(1, 10000000, true, 1000);
+//    }
 
-    @Order(2)
-    @Test
-    public void insertBatch2() throws ExecutionException, InterruptedException {
-        insert(2, 100000, true, 1000);
-    }
+//    @Order(2)
+//    @Test
+//    public void insertBatch2() throws ExecutionException, InterruptedException {
+//        insert(2, 10000000, true, 1000);
+//    }
 
-    @Order(4)
-    @Test
-    public void insertBatch4() throws ExecutionException, InterruptedException {
-        insert(4, 100000, true, 1000);
-    }
+//    @Order(4)
+//    @Test
+//    public void insertBatch4() throws ExecutionException, InterruptedException {
+//        insert(4, 10000000, true, 1000);
+//    }
 
     @Order(5)
     @Test
     public void insertBatch5() throws ExecutionException, InterruptedException {
-        insert(5, 100000, true, 1000);
+        insert(5, 10000000, true, 1000);
     }
 
     @Order(10)
     @Test
     public void insertBatch10() throws ExecutionException, InterruptedException {
-        insert(10, 100000, true, 1000);
+        insert(10, 10000000, true, 1000);
     }
 
     @Order(20)
     @Test
     public void insertBatch20() throws ExecutionException, InterruptedException {
-        insert(20, 100000, true, 1000);
+        insert(20, 10000000, true, 1000);
     }
 
 }

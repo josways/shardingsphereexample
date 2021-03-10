@@ -7,6 +7,8 @@ import com.example.customtest.service.TTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TTestServiceImpl extends ServiceImpl<TTestMapper,TTest> implements TTestService{
 
@@ -17,4 +19,10 @@ public class TTestServiceImpl extends ServiceImpl<TTestMapper,TTest> implements 
     public void truncateData() {
         tTestMapper.truncateData();
     }
+
+    @Override
+    public int batchInsert(List<TTest> tTestList) {
+        return tTestMapper.batchInsert(tTestList);
+    }
+
 }
